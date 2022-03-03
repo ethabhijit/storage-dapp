@@ -1,25 +1,69 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useContext } from "react";
+import { Container, Button, Card, Form, Spinner } from "react-bootstrap";
+import { StorageContext } from "./context/StorageContext";
 
-function App() {
+import "./App.css";
+
+const App = () => {
+  const [formData, setFormData] = useState(0);
+  const { connectWallet, currentAccount, dataValue, setData, loading } =
+    useContext(StorageContext);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setData(formData);
+    setFormData("");
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container className="mt-4">
+      <Card style={{ width: "18rem" }}>
+        {currentAccount ? (
+          <Card.Body>
+            <Card.Title>Data value is {dataValue}</Card.Title>
+
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3 mt-3" controlId="formBasicPassword">
+                <Form.Control
+                  type="number"
+                  placeholder="Enter new value"
+                  onChange={(e) => setFormData(e.target.value)}
+                  value={formData}
+                  disabled={loading}
+                />
+              </Form.Group>
+
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={loading || !formData}
+              >
+                {!loading ? (
+                  <>Set value</>
+                ) : (
+                  <>
+                    <Spinner
+                      as="span"
+                      animation="grow"
+                      size="sm"
+                      className="mx-1"
+                    />
+                    Loading...
+                  </>
+                )}
+              </Button>
+            </Form>
+          </Card.Body>
+        ) : (
+          <Card.Body>
+            <Button variant="primary" onClick={connectWallet}>
+              Connect Metamask
+            </Button>
+          </Card.Body>
+        )}
+      </Card>
+    </Container>
   );
-}
+};
 
 export default App;
